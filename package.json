@@ -1,0 +1,21 @@
+﻿{
+  "name": "cn.packagemanager",
+  "displayName": "ET.PackageManager",
+  "version": "0.0.1",
+  "unity": "2023.3.20",
+  "category": "Core/Manager",
+  "description": "ETPackageManager ET包管理 ",
+  "author": {
+    "name": "QYY",
+    "url": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ET-Packages/cn.etetet.packagemanager"
+  },
+  "relatedPackages": {},
+  "dependencies": {},
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}

@@ -1,2 +1,3 @@
-# 01_packagemanager
-管理所有资源包的编辑器
+# ET包管理
+
+# [文档](https://lib9kmxvq7k.feishu.cn/wiki/DzqwwwBJvixRvtkCI4dcatGcnAd)

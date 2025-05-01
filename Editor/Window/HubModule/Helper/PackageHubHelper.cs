@@ -2,14 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using UnityEditor.PackageManager.Requests;
-using UnityEditor.PackageManager;
 
 namespace ET.Editor.PackageManager
 {
@@ -17,7 +14,6 @@ namespace ET.Editor.PackageManager
     {
         private const string PackageURL = "https://github.com/orgs/ET-Packages/packages?page=";
 
-        public const string ETPackageHubAssetPath = PackageHelper.ETPackageAssetsFolderPath + "/PackageHubAsset.asset";
 
         private static PackageHubAsset m_PackageHubAsset;
 
@@ -45,17 +41,22 @@ namespace ET.Editor.PackageManager
 
         public static void SaveAsset()
         {
-            if (m_PackageHubAsset == null) return;
+            if (m_PackageHubAsset == null)
+            {
+                return;
+            }
+
             EditorUtility.SetDirty(m_PackageHubAsset);
         }
 
         private static bool LoadAsset()
         {
-            m_PackageHubAsset = AssetDatabase.LoadAssetAtPath<PackageHubAsset>(ETPackageHubAssetPath);
+            m_PackageHubAsset = ScripatbleObjectHelper.FindScriptableObject<PackageHubAsset>();
 
             if (m_PackageHubAsset == null)
             {
-                CreateAsset();
+                var assetFolder = $"{Application.dataPath}/../{PackageConst.PackageAssetsFolderPath}";
+                m_PackageHubAsset = ScripatbleObjectHelper.CreatAsset<PackageHubAsset>(assetFolder);
             }
 
             if (m_PackageHubAsset == null)
@@ -65,17 +66,6 @@ namespace ET.Editor.PackageManager
             }
 
             return true;
-        }
-
-        private static void CreateAsset()
-        {
-            m_PackageHubAsset = ScriptableObject.CreateInstance<PackageHubAsset>();
-
-            var assetFolder = $"{Application.dataPath}/../{PackageHelper.ETPackageAssetsFolderPath}";
-            if (!Directory.Exists(assetFolder))
-                Directory.CreateDirectory(assetFolder);
-
-            AssetDatabase.CreateAsset(m_PackageHubAsset, ETPackageHubAssetPath);
         }
 
         private static bool m_Requesting;
@@ -111,14 +101,14 @@ namespace ET.Editor.PackageManager
             }
 
             m_PackageHubAsset.LastUpdateTime = currentTime;
-            m_CheckUpdateCallback            = callback;
-            m_Requesting                     = true;
+            m_CheckUpdateCallback = callback;
+            m_Requesting = true;
 
             try
             {
-                #pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
                 RefreshPackages();
-                #pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
             }
             catch (Exception ex)
             {
@@ -129,8 +119,8 @@ namespace ET.Editor.PackageManager
         private static async Task RefreshPackages()
         {
             var tempAllPackageData = new Dictionary<string, PackageHubData>();
-            int page               = 0;
-            int lastCount          = 0;
+            var page = 0;
+            var lastCount = 0;
             while (true)
             {
                 page++;
@@ -199,7 +189,7 @@ namespace ET.Editor.PackageManager
 
         private static async Task<string> GetHtmlContent(string url)
         {
-            string    html   = "";
+            var html = "";
             using var client = new HttpClient();
             try
             {
@@ -217,27 +207,27 @@ namespace ET.Editor.PackageManager
 
         private static bool ExtractPackages(string html, ref Dictionary<string, PackageHubData> dic)
         {
-            string          packagePattern  = @"title=""cn.etetet.(\w+)""";
-            string          downloadPattern = @"</svg>\s*?(.*?)\s*?</span>\s*?</div>\s*?</div>";
-            Regex           packageRegex    = new Regex(packagePattern);
-            Regex           downloadRegex   = new Regex(downloadPattern);
-            MatchCollection packageMatches  = packageRegex.Matches(html);
-            MatchCollection downloadMatches = downloadRegex.Matches(html);
+            var packagePattern = @"title=""cn.etetet.(\w+)""";
+            var downloadPattern = @"</svg>\s*?(.*?)\s*?</span>\s*?</div>\s*?</div>";
+            var packageRegex = new Regex(packagePattern);
+            var downloadRegex = new Regex(downloadPattern);
+            var packageMatches = packageRegex.Matches(html);
+            var downloadMatches = downloadRegex.Matches(html);
 
-            if (packageMatches.Count != downloadMatches.Count || packageMatches.Count <= 0 || downloadMatches.Count <= 0)
+            if (packageMatches.Count != downloadMatches.Count||packageMatches.Count <= 0||downloadMatches.Count <= 0)
             {
                 return false;
             }
 
-            for (int i = 0; i < packageMatches.Count; i++)
+            for (var i = 0; i < packageMatches.Count; i++)
             {
-                var packageName      = $"cn.etetet.{packageMatches[i].Groups[1].Value}";
+                var packageName = $"cn.etetet.{packageMatches[i].Groups[1].Value}";
                 var downloadCountStr = downloadMatches[i].Groups[1].Value;
-                var downloadCount    = downloadCountStr.Replace(" ", "");
+                var downloadCount = downloadCountStr.Replace(" ", "");
 
                 dic[packageName] = new()
                 {
-                    PackageName   = packageName,
+                    PackageName = packageName,
                     DownloadValue = ConvertToNumber(downloadCount),
                 };
             }
@@ -248,13 +238,13 @@ namespace ET.Editor.PackageManager
         private static long ConvertToNumber(string input)
         {
             double number;
-            string suffix = string.Empty;
+            var suffix = string.Empty;
 
-            int lastIndex = input.Length - 1;
+            var lastIndex = input.Length - 1;
             if (char.IsLetter(input[lastIndex]))
             {
                 suffix = input.Substring(lastIndex);
-                input  = input.Substring(0, lastIndex);
+                input = input.Substring(0, lastIndex);
             }
 
             if (!double.TryParse(input, out number))
@@ -265,14 +255,14 @@ namespace ET.Editor.PackageManager
 
             switch (suffix.ToLower())
             {
-                case "k":
+                case "k" :
                     return (long)(number * 1e3);
-                case "w":
+                case "w" :
                     return (long)(number * 1e4);
-                case "b":
+                case "b" :
                     return (long)(number * 1e9);
-                default:
-                    return (long)(number);
+                default :
+                    return (long)number;
             }
         }
 
@@ -280,7 +270,7 @@ namespace ET.Editor.PackageManager
         {
             var packagePath = Application.dataPath.Replace("Assets", "Packages") + "/" + packageName;
 
-            if (!System.IO.Directory.Exists(packagePath))
+            if (!Directory.Exists(packagePath))
             {
                 if (showLog)
                 {
@@ -298,8 +288,8 @@ namespace ET.Editor.PackageManager
                 {
                     foreach (var dependencyInfo in versionData.DependenciesSelf)
                     {
-                        var name    = dependencyInfo.Name;
-                        var hubData = PackageHubHelper.GetPackageHubData(name);
+                        var name = dependencyInfo.Name;
+                        var hubData = GetPackageHubData(name);
                         if (hubData != null)
                         {
                             if (hubData.Install)
@@ -322,8 +312,8 @@ namespace ET.Editor.PackageManager
         #region 请求更新所有
 
         private static bool m_RequestingAll;
-        private static int  m_RefreshCompleteCount;
-        private static int  m_RefreshMaxCount;
+        private static int m_RefreshCompleteCount;
+        private static int m_RefreshMaxCount;
 
         public static void RefreshRequestAll(List<PackageHubData> allPackages)
         {
@@ -333,8 +323,8 @@ namespace ET.Editor.PackageManager
                 return;
             }
 
-            m_RequestingAll        = true;
-            m_RefreshMaxCount      = allPackages.Count;
+            m_RequestingAll = true;
+            m_RefreshMaxCount = allPackages.Count;
             m_RefreshCompleteCount = 0;
 
             EditorUtility.DisplayProgressBar("同步信息", $"请求中... {m_RefreshCompleteCount} / {m_RefreshMaxCount}", 0);
@@ -363,7 +353,7 @@ namespace ET.Editor.PackageManager
             m_RefreshCompleteCount++;
 
             EditorUtility.DisplayProgressBar("同步信息", $"请求中... {m_RefreshCompleteCount} / {m_RefreshMaxCount}",
-                (float)m_RefreshCompleteCount / m_RefreshMaxCount);
+                                             (float)m_RefreshCompleteCount / m_RefreshMaxCount);
 
             if (m_RefreshCompleteCount >= m_RefreshMaxCount)
             {
@@ -377,8 +367,7 @@ namespace ET.Editor.PackageManager
         #endregion
 
         public static Dictionary<string, List<PackageHubData>> GetNextCategoryData(List<PackageHubData> allPackages,
-                                                                                   int                  layer,
-                                                                                   string               lastAllPath = "")
+            int layer, string lastAllPath = "")
         {
             Dictionary<string, List<PackageHubData>> nextCategory = new();
             foreach (var package in allPackages)
@@ -403,10 +392,10 @@ namespace ET.Editor.PackageManager
                 foreach (var categoryA in categoryAList)
                 {
                     var categoryList = categoryA.Split("/");
-                    var category     = "";
-                    if (categoryList != null && categoryList.Length >= layer)
+                    var category = "";
+                    if (categoryList != null&&categoryList.Length >= layer)
                     {
-                        if (layer > 1 && !string.IsNullOrEmpty(lastAllPath))
+                        if (layer > 1&&!string.IsNullOrEmpty(lastAllPath))
                         {
                             if (!categoryA.Contains(lastAllPath))
                             {
@@ -452,17 +441,20 @@ namespace ET.Editor.PackageManager
 
         private static async Task GetBookPackageInfo(Dictionary<string, PackageHubData> dic)
         {
-            var packagesContent = await GetHtmlContent("https://github.com/egametang/ET/blob/release9.0/Book/8.2ET%20Package%E7%9B%AE%E5%BD%95.md");
-            var rowRegex        = new Regex(@"<tr><td>(.*?)</td><td>(.*?)</td><td>(.*?)</td><td>(.*?)</td></tr>", RegexOptions.Compiled);
-            var matches         = rowRegex.Matches(packagesContent.Replace("\n", ""));
+            var packagesContent =
+                await GetHtmlContent(
+                    "https://github.com/egametang/ET/blob/release9.0/Book/8.2ET%20Package%E7%9B%AE%E5%BD%95.md");
+            var rowRegex = new Regex(@"<tr><td>(.*?)</td><td>(.*?)</td><td>(.*?)</td><td>(.*?)</td></tr>",
+                                     RegexOptions.Compiled);
+            var matches = rowRegex.Matches(packagesContent.Replace("\n", ""));
 
             foreach (Match match in matches)
             {
                 var name = match.Groups[2].Value;
                 if (!string.IsNullOrEmpty(name))
                 {
-                    var   pattern   = @"cn.etetet.(\w+)";
-                    Match nameMatch = Regex.Match(name, pattern);
+                    var pattern = @"cn.etetet.(\w+)";
+                    var nameMatch = Regex.Match(name, pattern);
                     if (nameMatch.Success)
                     {
                         name = nameMatch.Value;
@@ -474,42 +466,41 @@ namespace ET.Editor.PackageManager
                 var url = "";
                 if (!string.IsNullOrEmpty(description))
                 {
-                    string urlPattern  = @"href=""(https?://[^""]+)""";
-                    string textPattern = @">([^<]+)<";
-                    Match  urlMatch    = Regex.Match(description, urlPattern);
-                    Match  textMatch   = Regex.Match(description, textPattern);
-                    if (urlMatch.Success && textMatch.Success)
+                    var urlPattern = @"href=""(https?://[^""]+)""";
+                    var textPattern = @">([^<]+)<";
+                    var urlMatch = Regex.Match(description, urlPattern);
+                    var textMatch = Regex.Match(description, textPattern);
+                    if (urlMatch.Success&&textMatch.Success)
                     {
-                        url         = urlMatch.Groups[1].Value;
+                        url = urlMatch.Groups[1].Value;
                         description = $"{textMatch.Groups[1].Value}\n{url}";
                     }
                 }
 
                 PackagePayInfo package = new()
                 {
-                    Id          = match.Groups[1].Value,
-                    Name        = name,
+                    Id = match.Groups[1].Value,
+                    Name = name,
                     Description = description,
-                    Price       = match.Groups[4].Value,
-                    Url         = url,
+                    Price = match.Groups[4].Value,
+                    Url = url,
                 };
 
                 var packageName = package.Name;
-                if (!string.IsNullOrEmpty(packageName) &&
-                    !string.IsNullOrEmpty(package.Id) &&
+                if (!string.IsNullOrEmpty(packageName)&&!string.IsNullOrEmpty(package.Id)&&
                     !string.IsNullOrEmpty(package.Price))
                 {
                     if (!dic.ContainsKey(packageName))
                     {
-                        int.TryParse(package.Id.Replace(" ", ""), out int idInt);
+                        int.TryParse(package.Id.Replace(" ", ""), out var idInt);
 
                         dic[packageName] = new()
                         {
-                            PackageName        = packageName,
-                            DownloadValue      = long.MaxValue - idInt,
-                            PayInfo            = package,
+                            PackageName = packageName,
+                            DownloadValue = long.MaxValue - idInt,
+                            PayInfo = package,
                             PackageDescription = package.Description,
-                            PackageCategory    = "Pay",
+                            PackageCategory = "Pay",
                         };
                     }
                 }

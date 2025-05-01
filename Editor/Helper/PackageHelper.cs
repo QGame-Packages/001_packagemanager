@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -13,12 +12,6 @@ namespace ET.Editor.PackageManager
 {
     public static class PackageHelper
     {
-        public const string ETPackagePath = "Packages/cn.etetet.packagemanager";
-
-        public const string ETPackageAssetsFolderPath = ETPackagePath + "/Editor/Assets";
-
-        public const string ETPackageInfoAssetPath = ETPackageAssetsFolderPath + "/PackageInfoAsset.asset";
-
         private static PackageInfoAsset m_PackageInfoAsset;
 
         public static PackageInfoAsset PackageInfoAsset
@@ -77,11 +70,12 @@ namespace ET.Editor.PackageManager
                 return true;
             }
 
-            m_PackageInfoAsset = AssetDatabase.LoadAssetAtPath<PackageInfoAsset>(ETPackageInfoAssetPath);
+            m_PackageInfoAsset = ScripatbleObjectHelper.FindScriptableObject<PackageInfoAsset>();
 
             if (m_PackageInfoAsset == null)
             {
-                CreateAsset();
+                var path = $"{Application.dataPath}/../{PackageConst.PackageAssetsFolderPath}";
+                m_PackageInfoAsset = ScripatbleObjectHelper.CreatAsset<PackageInfoAsset>(path);
             }
 
             if (m_PackageInfoAsset == null)
@@ -93,19 +87,6 @@ namespace ET.Editor.PackageManager
             m_PackageInfoAsset.ReUpdateInfo();
 
             return true;
-        }
-
-        private static void CreateAsset()
-        {
-            m_PackageInfoAsset = ScriptableObject.CreateInstance<PackageInfoAsset>();
-
-            var assetFolder = $"{Application.dataPath}/../{ETPackageAssetsFolderPath}";
-            if (!Directory.Exists(assetFolder))
-            {
-                Directory.CreateDirectory(assetFolder);
-            }
-
-            AssetDatabase.CreateAsset(m_PackageInfoAsset, ETPackageInfoAssetPath);
         }
 
         public static bool IsBanPackage(string name)

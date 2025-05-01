@@ -1,7 +1,5 @@
 ﻿#if ODIN_INSPECTOR
-using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,8 +7,6 @@ namespace ET.Editor.PackageManager
 {
     public static class PackageVersionHelper
     {
-        public const string ETPackageVersionAssetPath = PackageHelper.ETPackageAssetsFolderPath + "/PackageVersionAsset.asset";
-
         private static PackageVersionAsset m_PackageVersionAsset;
 
         public static PackageVersionAsset PackageVersionAsset
@@ -37,17 +33,23 @@ namespace ET.Editor.PackageManager
 
         public static void SaveAsset()
         {
-            if (m_PackageVersionAsset == null) return;
+            if (m_PackageVersionAsset == null)
+            {
+                return;
+            }
+
             EditorUtility.SetDirty(m_PackageVersionAsset);
         }
 
         public static bool LoadAsset()
         {
-            m_PackageVersionAsset = AssetDatabase.LoadAssetAtPath<PackageVersionAsset>(ETPackageVersionAssetPath);
+            m_PackageVersionAsset = ScripatbleObjectHelper.FindScriptableObject<PackageVersionAsset>();
 
             if (m_PackageVersionAsset == null)
             {
-                CreateAsset();
+                var assetFolder = $"{Application.dataPath}/../{PackageConst.PackageAssetsFolderPath}";
+                m_PackageVersionAsset =
+                    ScripatbleObjectHelper.CreatAsset<PackageVersionAsset>(assetFolder);
             }
 
             if (m_PackageVersionAsset == null)
@@ -60,17 +62,6 @@ namespace ET.Editor.PackageManager
             return true;
         }
 
-        private static void CreateAsset()
-        {
-            m_PackageVersionAsset = ScriptableObject.CreateInstance<PackageVersionAsset>();
-
-            var assetFolder = $"{Application.dataPath}/../{PackageHelper.ETPackageAssetsFolderPath}";
-            if (!Directory.Exists(assetFolder))
-                Directory.CreateDirectory(assetFolder);
-
-            AssetDatabase.CreateAsset(m_PackageVersionAsset, ETPackageVersionAssetPath);
-        }
-
         private static void LoadAllPackageInfoData()
         {
             var m_AllPackageInfoDataList = m_PackageVersionAsset.AllPackageVersionData;
@@ -79,22 +70,21 @@ namespace ET.Editor.PackageManager
             //初始化
             foreach (var packageInfo in PackageHelper.CurrentRegisteredPackages.Values)
             {
-                var name         = packageInfo.name;
-                var version      = packageInfo.version;
+                var name = packageInfo.name;
+                var version = packageInfo.version;
                 var dependencies = packageInfo.dependencies;
 
                 var infoData = new PackageVersionData(name, version);
                 infoData.Dependencies = new();
                 foreach (var dependency in dependencies)
                 {
-                    infoData.Dependencies.Add(
-                        new DependencyInfo()
-                        {
-                            SelfName         = name,
-                            Name             = dependency.name,
-                            Version          = dependency.version,
-                            DependenciesSelf = false
-                        });
+                    infoData.Dependencies.Add(new DependencyInfo()
+                    {
+                        SelfName = name,
+                        Name = dependency.name,
+                        Version = dependency.version,
+                        DependenciesSelf = false
+                    });
                 }
 
                 m_AllPackageInfoDataList.Add(name, infoData);
@@ -103,7 +93,7 @@ namespace ET.Editor.PackageManager
             //处理依赖关系
             foreach (var data in m_AllPackageInfoDataList.Values)
             {
-                var name         = data.Name;
+                var name = data.Name;
                 var dependencies = data.Dependencies;
                 foreach (var dependency in dependencies)
                 {
@@ -113,6 +103,7 @@ namespace ET.Editor.PackageManager
                         {
                             Debug.LogError($"{name}依赖包{dependency.Name}不存在");
                         }
+
                         continue;
                     }
 
@@ -123,14 +114,13 @@ namespace ET.Editor.PackageManager
                         target.DependenciesSelf = new();
                     }
 
-                    target.DependenciesSelf.Add(
-                        new DependencyInfo()
-                        {
-                            SelfName         = dependency.Name,
-                            Name             = name,
-                            Version          = dependency.Version,
-                            DependenciesSelf = true,
-                        });
+                    target.DependenciesSelf.Add(new DependencyInfo()
+                    {
+                        SelfName = dependency.Name,
+                        Name = name,
+                        Version = dependency.Version,
+                        DependenciesSelf = true,
+                    });
                 }
             }
         }

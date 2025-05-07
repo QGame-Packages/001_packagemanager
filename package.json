@@ -1,5 +1,5 @@
 ﻿{
-  "name": "com.001_packagemanager",
+  "name": "com.qyy.001_packagemanager",
   "displayName": "ET.001_packagemanager",
   "version": "0.0.1",
   "unity": "2023.3.61f1",
@@ -16,6 +16,6 @@
   "relatedPackages": {},
   "dependencies": {},
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@QGame-Packages"
+    "registry": "https://npm.pkg.github.com/QGame-Packages"
   }
 }

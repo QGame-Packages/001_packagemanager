@@ -12,7 +12,7 @@ namespace ET.Editor.PackageManager
 {
     public static class PackageHubHelper
     {
-        private const string PackageURL = "https://github.com/orgs/ET-Packages/packages?page=";
+        private const string PackageURL = "https://github.com/orgs/QGame-Packages/packages?page=";
 
 
         private static PackageHubAsset m_PackageHubAsset;

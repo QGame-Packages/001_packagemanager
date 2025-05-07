@@ -11,6 +11,6 @@
   "relatedPackages": {},
   "dependencies": {},
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@ET-Packages"
+    "registry": "https://npm.pkg.github.com/@QGame-Packages"
   }
 }

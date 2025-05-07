@@ -316,7 +316,7 @@ namespace ET.Editor.PackageManager
 
             if (string.IsNullOrEmpty(PackageRepositoryURL))
             {
-                PackageRepositoryURL = $"https://github.com/ET-Packages/{PackageName}";
+                PackageRepositoryURL = $"https://github.com/QGame-Packages/{PackageName}";
             }
 
             PackageDescription = info.description;

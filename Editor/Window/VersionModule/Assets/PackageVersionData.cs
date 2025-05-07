@@ -248,7 +248,7 @@ namespace ET.Editor.PackageManager
         public void OpenPackageURL()
         {
             if (string.IsNullOrEmpty(Name)) return;
-            Application.OpenURL($"https://github.com/ET-Packages/{Name}");
+            Application.OpenURL($"https://github.com/QGame-Packages/{Name}");
         }
 
         private void UpdateDependencies()

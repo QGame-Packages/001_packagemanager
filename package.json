@@ -1,8 +1,8 @@
 ﻿{
-  "name": "cn.packagemanager",
-  "displayName": "ET.PackageManager",
+  "name": "com.001_packagemanager",
+  "displayName": "ET.001_packagemanager",
   "version": "0.0.1",
-  "unity": "2023.3.20",
+  "unity": "2023.3.61f1",
   "category": "Core/Manager",
   "description": "ETPackageManager ET包管理 ",
   "author": {
@@ -11,11 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ET-Packages/cn.etetet.packagemanager"
+    "url": "https://github.com/QGame-Packages/001_packagemanager"
   },
   "relatedPackages": {},
   "dependencies": {},
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@ET-Packages"
+    "registry": "https://npm.pkg.github.com/@QGame-Packages"
   }
 }

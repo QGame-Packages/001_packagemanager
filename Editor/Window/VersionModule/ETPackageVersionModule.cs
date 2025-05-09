@@ -16,55 +16,42 @@ namespace ET.Editor.PackageManager
     [Flags]
     public enum EPackagesFilterType
     {
-        [LabelText("全部")]
-        All = 1 << 30,
+        [LabelText("全部")] All = 1 << 30,
 
-        [LabelText("无")]
-        None = 1,
+        [LabelText("无")] None = 1,
 
-        [LabelText("ET包")]
-        ET = 1 << 1,
+        [LabelText("ET包")] ET = 1 << 1,
 
-        [LabelText("更新")]
-        Update = 1 << 2,
+        [LabelText("更新")] Update = 1 << 2,
 
-        [LabelText("请求")]
-        Req = 1 << 3,
+        [LabelText("请求")] Req = 1 << 3,
 
-        [LabelText("禁用")]
-        Ban = 1 << 4,
+        [LabelText("禁用")] Ban = 1 << 4,
 
-        [LabelText("解禁")]
-        ReBan = 1 << 5,
+        [LabelText("解禁")] ReBan = 1 << 5,
     }
 
     public enum EPackagesFilterOperationType
     {
-        [LabelText("唯一")]
-        Only = 0,
+        [LabelText("唯一")] Only = 0,
 
-        [LabelText("或")]
-        Or = 1,
+        [LabelText("或")] Or = 1,
 
-        [LabelText("与")]
-        And = 2,
+        [LabelText("与")] And = 2,
     }
 
     /// <summary>
     /// 版本管理
     /// </summary>
     [ETPackageMenu("版本管理", 1000)]
-    public partial class ETPackageVersionModule: BasePackageToolModule
+    public partial class ETPackageVersionModule : BasePackageToolModule
     {
         public static ETPackageVersionModule Inst;
 
-        [HideLabel]
-        [HideIf("CheckUpdateAllEnd")]
-        [ShowInInspector]
-        [DisplayAsString(true)]
+        [HideLabel] [HideIf("CheckUpdateAllEnd")] [ShowInInspector] [DisplayAsString(true)]
         private const string m_CheckUpdateAllReqing = "请求所有包最新版本中...";
 
-        [BoxGroup("信息", centerLabel:true)]
+        [BoxGroup("信息", centerLabel: true)]
         [EnumToggleButtons]
         [HideLabel]
         [OnValueChanged("OnFilterOperationTypeChanged")]
@@ -83,7 +70,7 @@ namespace ET.Editor.PackageManager
             LoadFilterPackageInfoData();
         }
 
-        [BoxGroup("信息", centerLabel:true)]
+        [BoxGroup("信息", centerLabel: true)]
         [EnumToggleButtons]
         [HideLabel]
         [OnValueChanged("OnFilterTypeChanged")]
@@ -101,7 +88,7 @@ namespace ET.Editor.PackageManager
                 {
                     var current = (int)FilterType;
                     var last = (int)LastFilterType;
-                    FilterType = (EPackagesFilterType)(current > last? current - last : last - current);
+                    FilterType = (EPackagesFilterType)(current > last ? current - last : last - current);
                 }
             }
 
@@ -109,7 +96,7 @@ namespace ET.Editor.PackageManager
             LoadFilterPackageInfoData();
         }
 
-        [BoxGroup("信息", centerLabel:true)]
+        [BoxGroup("信息", centerLabel: true)]
         [LabelText("搜索 (支持正则)")]
         [ShowIf("CheckUpdateAllEnd")]
         [OnValueChanged("OnSearchChanged")]
@@ -133,9 +120,9 @@ namespace ET.Editor.PackageManager
         private BoolPrefs SyncDependencyPrefs = new("ETPackageVersionModule_SyncDependency", null, true);
         private StringPrefs SearchPrefs = new("ETPackageVersionModule_Search", null, "");
 
-        public bool CheckUpdateAllEnd{get;private set;}
+        public bool CheckUpdateAllEnd { get; private set; }
 
-        public bool RequestAllResult{get;private set;}
+        public bool RequestAllResult { get; private set; }
 
         public override void Initialize()
         {
@@ -182,7 +169,7 @@ namespace ET.Editor.PackageManager
             });
         }
 
-        [Button("文档", 30, Icon = SdfIconType.Link45deg, IconAlignment = IconAlignment.LeftOfText)]
+        [Button("文档", 30)]
         [PropertyOrder(-999)]
         [ShowIf("CheckUpdateAllEnd")]
         public void OpenDocument()
@@ -248,7 +235,7 @@ namespace ET.Editor.PackageManager
             {
                 var dependency = packageInfoData.Dependencies[i];
                 var oldDependency = oldPackageInfo.Dependencies[i];
-                if (dependency.Name != oldDependency.Name||dependency.Version != oldDependency.Version)
+                if (dependency.Name != oldDependency.Name || dependency.Version != oldDependency.Version)
                 {
                     return true;
                 }
@@ -264,7 +251,7 @@ namespace ET.Editor.PackageManager
             {
                 var dependency = packageInfoData.DependenciesSelf[i];
                 var oldDependency = oldPackageInfo.DependenciesSelf[i];
-                if (dependency.Name != oldDependency.Name||dependency.Version != oldDependency.Version)
+                if (dependency.Name != oldDependency.Name || dependency.Version != oldDependency.Version)
                 {
                     return true;
                 }
@@ -317,7 +304,7 @@ namespace ET.Editor.PackageManager
 
         [TableList(DrawScrollView = true, AlwaysExpanded = true, IsReadOnly = true)]
         [NonSerialized]
-        [BoxGroup("筛选包数据", centerLabel:true)]
+        [BoxGroup("筛选包数据", centerLabel: true)]
         [HideLabel]
         [ShowInInspector]
         [ShowIf("CheckUpdateAllEnd")]
@@ -344,7 +331,7 @@ namespace ET.Editor.PackageManager
             {
                 var name = data.Key;
 
-                if (!string.IsNullOrEmpty(Search)&&!Regex.IsMatch(name, Search))
+                if (!string.IsNullOrEmpty(Search) && !Regex.IsMatch(name, Search))
                 {
                     continue;
                 }
@@ -354,10 +341,10 @@ namespace ET.Editor.PackageManager
 
                 switch (FilterOperationType)
                 {
-                    case EPackagesFilterOperationType.Only :
+                    case EPackagesFilterOperationType.Only:
                         add = GetResult(FilterType);
                         break;
-                    case EPackagesFilterOperationType.Or :
+                    case EPackagesFilterOperationType.Or:
                         add = false;
                         foreach (var value in packagesFilterTypeValues)
                         {
@@ -374,7 +361,7 @@ namespace ET.Editor.PackageManager
                         }
 
                         break;
-                    case EPackagesFilterOperationType.And :
+                    case EPackagesFilterOperationType.And:
                         add = true;
                         foreach (var value in packagesFilterTypeValues)
                         {
@@ -408,25 +395,25 @@ namespace ET.Editor.PackageManager
                     var result = false;
                     switch (filterValue)
                     {
-                        case EPackagesFilterType.All :
+                        case EPackagesFilterType.All:
                             result = true;
                             break;
-                        case EPackagesFilterType.None :
+                        case EPackagesFilterType.None:
                             result = false;
                             break;
-                        case EPackagesFilterType.ET :
+                        case EPackagesFilterType.ET:
                             result = infoData.IsETPackage;
                             break;
-                        case EPackagesFilterType.Update :
+                        case EPackagesFilterType.Update:
                             result = infoData.CanUpdateVersion;
                             break;
-                        case EPackagesFilterType.Req :
+                        case EPackagesFilterType.Req:
                             result = infoData.ShowIfReqVersion();
                             break;
-                        case EPackagesFilterType.Ban :
+                        case EPackagesFilterType.Ban:
                             result = infoData.ShowIfBanReqVersion();
                             break;
-                        case EPackagesFilterType.ReBan :
+                        case EPackagesFilterType.ReBan:
                             result = infoData.ShowIfReBanReqVersion();
                             break;
                     }
@@ -461,7 +448,7 @@ namespace ET.Editor.PackageManager
 
                     var target = m_AllPackageInfoDataDic[dependency.Name];
 
-                    if (target.IsETPackage&&!CheckVersion(dependency, target))
+                    if (target.IsETPackage && !CheckVersion(dependency, target))
                     {
                         Debug.LogError(
                             $"[{name}]依赖包[{dependency.Name}] 版本不匹配，依赖版本[{dependency.Version}]，当前版本[{target.Version}]");
@@ -513,21 +500,21 @@ namespace ET.Editor.PackageManager
             }
 
             //大版本号判断
-            if (targetVersionValue.Length >= 1&&targetVersionValue[0] != versionValue[0])
+            if (targetVersionValue.Length >= 1 && targetVersionValue[0] != versionValue[0])
             {
                 Debug.Log($"{targetData.Name} 大版本号不匹配，实际:{targetData.Version} 与 依赖:{dependencyVersion}不匹配");
                 return false;
             }
 
             //中版本号判断
-            if (targetVersionValue.Length >= 2&&targetVersionValue[1] != versionValue[1])
+            if (targetVersionValue.Length >= 2 && targetVersionValue[1] != versionValue[1])
             {
                 Debug.Log($"{targetData.Name} 中版本号不匹配，实际:{targetData.Version} 与 依赖:{dependencyVersion}不匹配");
                 return false;
             }
 
             //小版本号判断
-            if (targetVersionValue.Length >= 3&&targetVersionValue[2] < versionValue[2])
+            if (targetVersionValue.Length >= 3 && targetVersionValue[2] < versionValue[2])
             {
                 Debug.Log($"{targetData.Name} 小版本号不匹配，实际:{targetData.Version} 与 依赖:{dependencyVersion}不匹配");
                 return false;

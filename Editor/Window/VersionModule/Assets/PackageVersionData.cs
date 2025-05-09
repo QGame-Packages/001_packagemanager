@@ -1,6 +1,7 @@
 ﻿#if ODIN_INSPECTOR
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -34,14 +35,13 @@ namespace ET.Editor.PackageManager
             get => version;
             set
             {
-                version     = Regex.Replace(value, ETPackageVersionModule.Pattern, "");
+                version = Regex.Replace(value, ETPackageVersionModule.Pattern, "");
                 VersionLong = PackageHelper.GetVersionToLong(version);
                 SetVersionValue();
             }
         }
 
-        [HideInInspector]
-        public long VersionLong;
+        [HideInInspector] public long VersionLong;
 
         private void OnVersionChanged()
         {
@@ -49,26 +49,17 @@ namespace ET.Editor.PackageManager
         }
 
         [OdinSerialize]
-        [HideInInspector]
         public bool IsETPackage { get; set; }
 
-        [OdinSerialize]
-        [HideInInspector]
-        private int[] m_VersionValue;
+        [OdinSerialize] private int[] m_VersionValue;
 
-        public int[] VersionValue
-        {
-            get
-            {
-                return m_VersionValue;
-            }
-        }
+        public int[] VersionValue => m_VersionValue;
 
         private void SetVersionValue()
         {
             var versionSplit = Regex.Replace(Version, ETPackageVersionModule.Pattern, "").Split('.');
             m_VersionValue = new int[versionSplit.Length];
-            for (int i = 0; i < versionSplit.Length; i++)
+            for (var i = 0; i < versionSplit.Length; i++)
             {
                 if (!int.TryParse(versionSplit[i], out m_VersionValue[i]))
                 {
@@ -97,7 +88,11 @@ namespace ET.Editor.PackageManager
         [ButtonGroup("信息/更新版本")]
         public void UpdateVersion()
         {
-            if (VersionValue.Length < 3) return;
+            if (VersionValue.Length < 3)
+            {
+                return;
+            }
+
             VersionValue[0]--;
             if (VersionValue[0] < 0)
             {
@@ -113,7 +108,11 @@ namespace ET.Editor.PackageManager
         [ButtonGroup("信息/更新版本")]
         public void UpdateVersion2()
         {
-            if (VersionValue.Length < 3) return;
+            if (VersionValue.Length < 3)
+            {
+                return;
+            }
+
             VersionValue[0]++;
             Version = string.Join(".", VersionValue);
         }
@@ -124,7 +123,11 @@ namespace ET.Editor.PackageManager
         [ButtonGroup("信息/更新版本")]
         public void UpdateVersion3()
         {
-            if (VersionValue.Length < 2) return;
+            if (VersionValue.Length < 2)
+            {
+                return;
+            }
+
             VersionValue[1]--;
             if (VersionValue[1] < 0)
             {
@@ -140,7 +143,11 @@ namespace ET.Editor.PackageManager
         [ButtonGroup("信息/更新版本")]
         public void UpdateVersion4()
         {
-            if (VersionValue.Length < 2) return;
+            if (VersionValue.Length < 2)
+            {
+                return;
+            }
+
             VersionValue[1]++;
             Version = string.Join(".", VersionValue);
         }
@@ -237,17 +244,23 @@ namespace ET.Editor.PackageManager
         [ButtonGroup("信息/更新")]
         public void CheckUpdateVersion()
         {
-            UnityTipsHelper.CallBack($"{Name} 确定更新版本 {Version} >> {LastVersion}\n \n当前更新为覆盖更新模式!!!\n如果需要合并更新请自行解决!!!\n请确保网络没有问题!!!", UpdateDependencies);
+            UnityTipsHelper.CallBack(
+                $"{Name} 确定更新版本 {Version} >> {LastVersion}\n \n当前更新为覆盖更新模式!!!\n如果需要合并更新请自行解决!!!\n请确保网络没有问题!!!",
+                UpdateDependencies);
         }
 
-        [Button("更新日志", Icon = SdfIconType.Github, IconAlignment = IconAlignment.LeftOfText)]
+        [Button("更新日志")]
         [GUIColor(0.5f, 0.5f, 0.5f)]
         [VerticalGroup("信息")]
         [ShowIf("CanUpdateVersion")]
         [ButtonGroup("信息/更新")]
         public void OpenPackageURL()
         {
-            if (string.IsNullOrEmpty(Name)) return;
+            if (string.IsNullOrEmpty(Name))
+            {
+                return;
+            }
+
             Application.OpenURL($"https://github.com/QGame-Packages/{Name}");
         }
 
@@ -257,14 +270,14 @@ namespace ET.Editor.PackageManager
 
             try
             {
-                if (!System.IO.Directory.Exists(packagePath))
+                if (!Directory.Exists(packagePath))
                 {
                     return;
                 }
 
-                System.IO.Directory.Delete(packagePath, true);
+                Directory.Delete(packagePath, true);
 
-                if (System.IO.Directory.Exists(packagePath))
+                if (Directory.Exists(packagePath))
                 {
                     Debug.LogError("删除失败 文件还存在");
                     return;
@@ -308,60 +321,55 @@ namespace ET.Editor.PackageManager
             });
         }
 
-        [HideInInspector]
         [OdinSerialize]
         public bool CanUpdateVersion { get; private set; }
 
-        [HideInInspector]
         [OdinSerialize]
         public bool IsBan { get; private set; }
 
         [ReadOnly]
         [LabelText("最新版本")]
-        [DisplayAsString( true)]
+        [DisplayAsString(true)]
         [VerticalGroup("信息")]
         [ShowInInspector]
         [PropertyOrder(-100)]
-        private string DisplayLastVersion
-        {
-            get
-            {
-                return $"<color=#00FF00>{LastVersion}</color>";
-            }
-        }
+        private string DisplayLastVersion => $"<color=#00FF00>{LastVersion}</color>";
 
-        [HideInInspector]
-        [OdinSerialize]
-        private string m_LastVersion;
+        [OdinSerialize] private string m_LastVersion;
 
         public string LastVersion
         {
-            get { return m_LastVersion; }
+            get => m_LastVersion;
             private set
             {
-                m_LastVersion   = value;
+                m_LastVersion = value;
                 LastVersionLong = PackageHelper.GetVersionToLong(value);
             }
         }
 
-        [HideInInspector]
-        public long LastVersionLong;
+        [HideInInspector] public long LastVersionLong;
 
         public PackageVersionData(string name, string version)
         {
-            Name        = name;
-            Version     = version;
+            Name = name;
+            Version = version;
             IsETPackage = name.Contains("cn.etetet.");
             ReqCheckUpdate();
         }
 
         private void ReqCheckUpdate()
         {
-            if (!IsETPackage) return;
+            if (!IsETPackage)
+            {
+                return;
+            }
 
             IsBan = PackageHelper.IsBanPackage(Name);
 
-            if (IsBan) return;
+            if (IsBan)
+            {
+                return;
+            }
 
             PackageHelper.CheckUpdateTarget(Name, (lastVersion) =>
             {

@@ -12,7 +12,7 @@ namespace ET.Editor.PackageManager
     [ETPackageMenu("创建")]
     public class ETPackageCreateModule : BasePackageToolModule
     {
-        [Button("文档", 30, Icon = SdfIconType.Link45deg, IconAlignment = IconAlignment.LeftOfText)]
+        [Button("文档", 30)]
         [PropertyOrder(-999)]
         public void OpenDocument()
         {

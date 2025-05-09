@@ -38,7 +38,7 @@ namespace ET.Editor.PackageManager
         [HideLabel]
         [TableColumnWidth(30, Resizable = false)]
         [VerticalGroup("连接", -999)]
-        [Button(30, Icon = SdfIconType.CartFill, IconAlignment = IconAlignment.LeftOfText)]
+        [Button(30)]
         [ShowIf("PayPackage")]
         public void OpenPackagePay()
         {
@@ -55,7 +55,7 @@ namespace ET.Editor.PackageManager
         [HideLabel]
         [TableColumnWidth(60, Resizable = false)]
         [VerticalGroup("操作")]
-        [Button(40, Icon = SdfIconType.CartPlusFill, IconAlignment = IconAlignment.LeftOfText)]
+        [Button(40)]
         [ShowIf("PayPackage")]
         private void PackagePay()
         {
@@ -85,7 +85,7 @@ namespace ET.Editor.PackageManager
         [HideLabel]
         [TableColumnWidth(30, Resizable = false)]
         [VerticalGroup("连接", -999)]
-        [Button(30, Icon = SdfIconType.PersonFill, IconAlignment = IconAlignment.LeftOfText)]
+        [Button(30)]
         [ShowIf("ShowIfAuthorURL")]
         public void OpenPackageAuthorURL()
         {
@@ -106,7 +106,7 @@ namespace ET.Editor.PackageManager
         [HideLabel]
         [TableColumnWidth(30, Resizable = false)]
         [VerticalGroup("连接", -999)]
-        [Button(30, Icon = SdfIconType.Github, IconAlignment = IconAlignment.LeftOfText)]
+        [Button(30)]
         [ShowIf("ShowIfRepositoryURL")]
         public void OpenPackageRepositoryURL()
         {
@@ -167,7 +167,7 @@ namespace ET.Editor.PackageManager
         [HideLabel]
         [TableColumnWidth(60, Resizable = false)]
         [VerticalGroup("操作")]
-        [Button(40, Icon = SdfIconType.ArrowRepeat, IconAlignment = IconAlignment.LeftOfText)]
+        [Button(40)]
         [ShowIf("ShowIfUpdateData")]
         private void UpdateData()
         {
@@ -189,7 +189,7 @@ namespace ET.Editor.PackageManager
         [GUIColor("GetRemoveColor")]
         [TableColumnWidth(60, Resizable = false)]
         [VerticalGroup("操作")]
-        [Button(40, Icon = SdfIconType.X, IconAlignment = IconAlignment.LeftOfText)]
+        [Button(40)]
         [ShowIf("ShowIfRemovePackage")]
         private void RemovePackage()
         {
@@ -228,7 +228,7 @@ namespace ET.Editor.PackageManager
         [HideLabel]
         [TableColumnWidth(60, Resizable = false)]
         [VerticalGroup("操作")]
-        [Button(40, Icon = SdfIconType.ArrowDownShort, IconAlignment = IconAlignment.LeftOfText)]
+        [Button(40)]
         [GUIColor(0.4f, 0.8f, 1)]
         [HideIf("HideIfInstallPackage")]
         private void InstallPackage()

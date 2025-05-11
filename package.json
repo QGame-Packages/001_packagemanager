@@ -2,7 +2,7 @@
   "name": "com.qgame.001_packagemanager",
   "displayName": "001_packagemanager",
   "version": "0.0.1",
-  "unity": "2023.3.61f1",
+  "unity": "2023.3",
   "category": "Core/Manager",
   "description": "qgame 001_packageManager",
   "author": {

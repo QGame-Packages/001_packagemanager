@@ -1,4 +1,4 @@
-name: ET Package
+name: QGame Package
 
 on:
   workflow_dispatch:
